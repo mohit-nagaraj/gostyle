@@ -1,11 +1,8 @@
-package main
+package catlol
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"math"
-	"os"
 )
 
 func rgb(i int) (int, int, int) {
@@ -15,23 +12,17 @@ func rgb(i int) (int, int, int) {
 		int(math.Sin(f*float64(i)+4*math.Pi/3)*127 + 128)
 }
 
-func main() {
-	info, _ := os.Stdin.Stat()
-
-	if info.Mode()&os.ModeCharDevice != 0 {
-		fmt.Println("The command is intended to work with pipes.")
-		fmt.Println("Usage: fortune | gorainbow")
-	}
-
-	reader := bufio.NewReader(os.Stdin)
+func MakeRainbowText(input string) string {
+	var result string
 	j := 0
-	for {
-		input, _, err := reader.ReadRune()
-		if err != nil && err == io.EOF {
-			break
+	for _, r := range input {
+		if r == '\n' {
+			result += "\n"
+			continue
 		}
-		r, g, b := rgb(j)
-		fmt.Printf("\033[38;2;%d;%d;%dm%c\033[0m", r, g, b, input)
+		red, green, blue := rgb(j)
+		result += fmt.Sprintf("\033[38;2;%d;%d;%dm%c\033[0m", red, green, blue, r)
 		j++
 	}
+	return result
 }
