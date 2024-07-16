@@ -22,25 +22,27 @@ var (
 func main() {
 	kingpin.Version("0.0.1")
 	kingpin.Parse()
-
-	fi, err := os.Stat(*filename)
+	const fortunesDir = "fortunes"
+	fi, err := os.Stat(fortunesDir)
 	if err != nil {
-		log.Fatal(*filename + " is not exist...")
+		log.Fatal(fortunesDir + " is not exist...")
 	}
-	if fi.Mode().IsRegular() {
-		if isFortune(*filename) {
-			printFortune(*filename)
-		}
-	} else if fi.Mode().IsDir() {
-		files, err := os.ReadDir(*filename)
+	// if fi.Mode().IsRegular() {
+	// 	if isFortune(*filename) {
+	// 		printFortune(*filename)
+	// 	}
+	// } else
+	if fi.Mode().IsDir() {
+		files, err := os.ReadDir(fortunesDir)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		var forts []string
 		for _, file := range files {
-			if isFortune(*filename + "/" + file.Name()) {
-				forts = append(forts, *filename+"/"+file.Name())
+			filePath := fortunesDir + "/" + file.Name()
+			if isFortune(filePath) {
+				forts = append(forts, filePath)
 			}
 		}
 		s1 := rand.NewSource(time.Now().UnixNano())
