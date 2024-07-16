@@ -1,6 +1,7 @@
 # Fortune Cow Rainbow
 
 Fortune Cow Rainbow is a fun project that generates a random fortune, formats it with a cow image, colors it with RGB values, and prints it to the console.
+![image](https://github.com/user-attachments/assets/2325b093-5f9f-4464-955c-023267752129)
 
 ### Project Structure
 * main.go: The main program logic to generate a random fortune.
@@ -49,4 +50,4 @@ This file colors the input text using a rainbow effect. It calculates the RGB va
 Feel free to fork the repository, create a branch, and submit a pull request with your improvements.
 
 ## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the Apche License - see the LICENSE file for details.
