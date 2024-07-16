@@ -1,17 +1,31 @@
-package main
+package cowsay
 
 import (
-	"bufio"
 	"fmt"
-	"io"
-	"os"
 	"strings"
 	"unicode/utf8"
 )
 
-// buildBalloon takes a slice of strings of max width maxwidth
-// prepends/appends margins on first and last line, and at start/end of each line
-// and returns a string with the contents of the balloon
+var Cow = ` 
+         \  ^__^
+          \ (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+`
+
+// Builds a text balloon for the fortune, ensuring proper alignment and padding.
+//
+// fortune: The text of the fortune to be placed in the balloon.
+func BuildBalloon(fortune string) string {
+	lines := strings.Split(fortune, "\n") // Convert the fortune into a slice of lines based on the newline character.
+	lines = tabsToSpaces(lines)           // Convert tabs to spaces.
+	maxwidth := calculateMaxWidth(lines)  // Calculate the maximum width of the lines.
+	messages := normalizeStringsLength(lines, maxwidth)
+	balloon := buildBalloon(messages, maxwidth)
+	return balloon
+}
+
 func buildBalloon(lines []string, maxwidth int) string {
 	var borders []string
 	count := len(lines)
@@ -42,9 +56,6 @@ func buildBalloon(lines []string, maxwidth int) string {
 	return strings.Join(ret, "\n")
 }
 
-// tabsToSpaces converts all tabs found in the strings
-// found in the `lines` slice to 4 spaces, to prevent misalignments in
-// counting the runes
 func tabsToSpaces(lines []string) []string {
 	var ret []string
 	for _, l := range lines {
@@ -54,11 +65,13 @@ func tabsToSpaces(lines []string) []string {
 	return ret
 }
 
-// calculatemaxwidth given a slice of strings returns the length of the
-// string with max length
+// Calculates the maximum width of the lines in the text.
+//
+// lines: The lines of text to measure.
 func calculateMaxWidth(lines []string) int {
 	w := 0
 	for _, l := range lines {
+		//check the maximum width of the line
 		len := utf8.RuneCountInString(l)
 		if len > w {
 			w = len
@@ -68,9 +81,11 @@ func calculateMaxWidth(lines []string) int {
 	return w
 }
 
-// normalizeStringsLength takes a slice of strings and appends
-// to each one a number of spaces needed to have them all the same number
-// of runes
+// Normalizes the length of all lines by appending spaces so that
+// all lines have the same width.
+//
+// lines: The lines of text to normalize.
+// maxwidth: The maximum width to which the lines should be padded.
 func normalizeStringsLength(lines []string, maxwidth int) []string {
 	var ret []string
 	for _, l := range lines {
@@ -78,41 +93,4 @@ func normalizeStringsLength(lines []string, maxwidth int) []string {
 		ret = append(ret, s)
 	}
 	return ret
-}
-
-func main() {
-	info, _ := os.Stdin.Stat()
-
-	if info.Mode()&os.ModeCharDevice != 0 {
-		fmt.Println("The command is intended to work with pipes.")
-		fmt.Println("Usage: fortune | gocowsay")
-		// return
-	}
-
-	var lines []string
-
-	reader := bufio.NewReader(os.Stdin)
-
-	for {
-		line, _, err := reader.ReadLine()
-		if err != nil && err == io.EOF {
-			break
-		}
-		lines = append(lines, string(line))
-	}
-
-	var cow = `         \  ^__^
-          \ (oo)\_______
-	    (__)\       )\/\
-	        ||----w |
-	        ||     ||
-		`
-
-	lines = tabsToSpaces(lines)
-	maxwidth := calculateMaxWidth(lines)
-	messages := normalizeStringsLength(lines, maxwidth)
-	balloon := buildBalloon(messages, maxwidth)
-	fmt.Println(balloon)
-	fmt.Println(cow)
-	fmt.Println()
 }
